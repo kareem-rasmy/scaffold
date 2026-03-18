@@ -1,0 +1,4 @@
+.venv/*
+whl/*
+my_ws/*
+.vscode/*
