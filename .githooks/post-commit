@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Prevent infinite loop by checking if this commit already updated version.txt
+if git show --name-only --format="" HEAD | grep -q "scaffold/version.txt"; then
+    echo "version.txt was updated in this commit. Skipping version update."
+    exit 0
+fi
+
+# Get current date in YYYY.MM.DD format
+DATE=$(date +%Y.%m.%d)
+
+# Get the latest commit hash (short version) - this is the actual commit that just happened
+HASH=$(git rev-parse --short HEAD)
+
+# Update version.txt
+echo "$DATE-$HASH" > scaffold/version.txt
+
+# Add and commit the updated version.txt with --no-verify to skip hooks and avoid infinite loop
+git add scaffold/version.txt
+git commit -m "Update version.txt to $DATE-$HASH" --no-verify
+
+echo "Updated version.txt to $DATE-$HASH and committed the change."
