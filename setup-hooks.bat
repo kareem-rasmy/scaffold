@@ -12,3 +12,4 @@ echo Git hooks configured successfully!
 echo The post-commit hook will now automatically update version.txt
 echo.
 
+pause
