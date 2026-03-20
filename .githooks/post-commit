@@ -13,7 +13,7 @@ DATE=$(date +%Y.%m.%d)
 HASH=$(git rev-parse --short HEAD)
 
 # Update version.txt
-echo "$DATE-$HASH" > scaffold/version.txt
+echo "$DATE+$HASH" > scaffold/version.txt
 
 # Add and commit the updated version.txt with --no-verify to skip hooks and avoid infinite loop
 git add scaffold/version.txt
