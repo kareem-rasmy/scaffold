@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class MathSet(ABC):
+class Set(ABC):
     """Abstract Mathematical Set"""
 
     @abstractmethod
