@@ -18,15 +18,15 @@ def example_product_construction():
     
     # Create their Cartesian product
     A_x_B_elements = {(a, b) for a in A.elements for b in B.elements}
-    A_x_B = C.create_object("A×B", A_x_B_elements)
+    A_x_B = C.create_object("AxB", A_x_B_elements)
     
     # Create projections
     pi1 = C.create_morphism(A_x_B, A, 
                            {(a, b): a for (a, b) in A_x_B_elements},
-                           "π₁")
+                           "pi1")
     pi2 = C.create_morphism(A_x_B, B,
                            {(a, b): b for (a, b) in A_x_B_elements},
-                           "π₂")
+                           "pi2")
     
     # Now demonstrate the universal property
     # Create a test object X with maps to A and B
@@ -34,27 +34,27 @@ def example_product_construction():
     f = C.create_morphism(X, A, {"x1": "a1", "x2": "a2"}, "f")
     g = C.create_morphism(X, B, {"x1": "b1", "x2": "b2"}, "g")
     
-    # The unique mediating morphism ⟨f, g⟩
+    # The unique mediating morphism <f, g>
     mediating = C.create_morphism(X, A_x_B, 
                                   {"x1": ("a1", "b1"), "x2": ("a2", "b2")},
-                                  "⟨f,g⟩")
+                                  "<f,g>")
     
-    # Verify: π₁ ∘ ⟨f,g⟩ = f and π₂ ∘ ⟨f,g⟩ = g
-    left = pi1 @ mediating  # π₁ ∘ ⟨f,g⟩
-    right = pi2 @ mediating  # π₂ ∘ ⟨f,g⟩
+    # Verify: pi1 @ <f,g> = f and pi2 @ <f,g> = g
+    left = pi1 @ mediating  # pi1 @ <f,g>
+    right = pi2 @ mediating  # pi2 @ <f,g>
     
     print(f"A = {A.elements}")
     print(f"B = {B.elements}")
-    print(f"A×B = {A_x_B.elements}")
-    print(f"\nπ₁ = {pi1}")
-    print(f"π₂ = {pi2}")
+    print(f"AxB = {A_x_B.elements}")
+    print(f"\npi1 = {pi1}")
+    print(f"pi2 = {pi2}")
     print(f"\nTest object X = {X.elements}")
-    print(f"f: X→A = {f.mapping}")
-    print(f"g: X→B = {g.mapping}")
-    print(f"⟨f,g⟩: X→A×B = {mediating.mapping}")
+    print(f"f: X->A = {f.mapping}")
+    print(f"g: X->B = {g.mapping}")
+    print(f"<f,g>: X->AxB = {mediating.mapping}")
     print(f"\nVerification:")
-    print(f"  π₁ ∘ ⟨f,g⟩ = {left.mapping} == f = {f.mapping} ? {left.mapping == f.mapping}")
-    print(f"  π₂ ∘ ⟨f,g⟩ = {right.mapping} == g = {g.mapping} ? {right.mapping == g.mapping}")
+    print(f"  pi1 @ <f,g> = {left.mapping} == f = {f.mapping} ? {left.mapping == f.mapping}")
+    print(f"  pi2 @ <f,g> = {right.mapping} == g = {g.mapping} ? {right.mapping == g.mapping}")
 
 
 def example_initial_terminal():
@@ -106,11 +106,11 @@ def example_composition():
     f = C.create_morphism(A, B, {1: "x", 2: "y", 3: "x"}, "f")
     g = C.create_morphism(B, C_obj, {"x": True, "y": False}, "g")
     
-    # Compose g ∘ f
+    # Compose g @ f
     h = g @ f
     print(f"f: {f.mapping}")
     print(f"g: {g.mapping}")
-    print(f"g ∘ f: {h.mapping}")
+    print(f"g @ f: {h.mapping}")
     print(f"  h(1) = {h(1)} == g(f(1)) = g('x') = {g('x')}")
     print(f"  h(2) = {h(2)} == g(f(2)) = g('y') = {g('y')}")
     print(f"  h(3) = {h(3)} == g(f(3)) = g('x') = {g('x')}")

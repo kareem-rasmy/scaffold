@@ -6,13 +6,13 @@ from scaffold.core import CompositionError
 
 def _Z2():
     C = Grp()
-    Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+    Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
     return C, Z2
 
 
 def _Z4():
     C = Grp()
-    Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+    Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
     return C, Z4
 
 
@@ -37,14 +37,14 @@ class TestGroupObject:
 
     def test_repr_contains_name(self):
         _, Z2 = _Z2()
-        assert "Z₂" in repr(Z2)
+        assert "Z2" in repr(Z2)
 
 
 class TestGroupHomomorphism:
     def test_valid_reduction_mod2(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "mod2")
         assert phi(0) == 0
         assert phi(1) == 1
@@ -53,7 +53,7 @@ class TestGroupHomomorphism:
 
     def test_valid_trivial_homomorphism(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
         T = C.create_object("T", {0}, lambda a, b: 0, 0)
         trivial = C.create_morphism(Z4, T, lambda x: 0, "trivial")
         for x in Z4.elements:
@@ -61,23 +61,23 @@ class TestGroupHomomorphism:
 
     def test_invalid_does_not_preserve_identity_raises(self):
         C = Grp()
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
-        Z2b = C.create_object("Z₂b", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z2b = C.create_object("Z2b", {0, 1}, lambda a, b: (a + b) % 2, 0)
         with pytest.raises(ValueError, match="identity"):
             C.create_morphism(Z2, Z2b, lambda x: 1 - x, "flip")  # 0 ↦ 1, breaks identity
 
     def test_invalid_does_not_preserve_operation_raises(self):
         C = Grp()
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
         with pytest.raises(ValueError):
-            # Not a valid homomorphism Z₂ → Z₄ (maps 0→0, 1→1 but 1+1≠0+0 in Z₄)
+            # Not a valid homomorphism Z2 -> Z4 (maps 0->0, 1->1 but 1+1!=0+0 in Z4)
             C.create_morphism(Z2, Z4, lambda x: x, "bad")
 
     def test_composition_of_homomorphisms(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         T = C.create_object("T", {0}, lambda a, b: 0, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         psi = C.create_morphism(Z2, T, lambda x: 0, "psi")
@@ -89,8 +89,8 @@ class TestGroupHomomorphism:
 
     def test_composition_incompatible_raises(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         psi = C.create_morphism(Z4, Z2, lambda x: x % 2, "psi")
         with pytest.raises(CompositionError):
@@ -98,16 +98,16 @@ class TestGroupHomomorphism:
 
     def test_compose_with_non_homomorphism_raises(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         with pytest.raises(CompositionError):
             phi.compose("not a homomorphism")
 
     def test_homomorphism_call(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         assert phi(2) == 0
         assert phi(3) == 1
@@ -133,8 +133,8 @@ class TestGrpCategory:
 
     def test_compose_method(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         id_Z2 = C.identity(Z2)
         composed = C.compose(id_Z2, phi)
@@ -143,8 +143,8 @@ class TestGrpCategory:
 
     def test_homomorphism_preserves_operation(self):
         C = Grp()
-        Z4 = C.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
-        Z2 = C.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = C.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = C.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
         phi = C.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
         for a in Z4.elements:
             for b in Z4.elements:

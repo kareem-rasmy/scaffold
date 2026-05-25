@@ -56,18 +56,18 @@ class SetMorphism(Morphism):
         return self._mapping[x]
     
     def compose(self, other: 'SetMorphism') -> 'SetMorphism':
-        """Compose self ∘ other (self after other)."""
+        """Compose self @ other (self after other)."""
         if not isinstance(other, SetMorphism):
             raise CompositionError("Can only compose SetMorphism with SetMorphism")
         if other.codomain != self.domain:
             raise CompositionError(
-                f"Cannot compose: {other.codomain} ≠ {self.domain}"
+                f"Cannot compose: {other.codomain} != {self.domain}"
             )
         
         # Build the composite function: self(other(x))
         new_mapping = {x: self._mapping[other._mapping[x]] 
                       for x in other._mapping}
-        new_name = f"({self._name} ∘ {other._name})"
+        new_name = f"({self._name} @ {other._name})"
         
         return SetMorphism(other.domain, self.codomain, new_mapping, new_name)
 
@@ -98,7 +98,7 @@ class FinSet(Category):
         return morphism
     
     def compose(self, f: SetMorphism, g: SetMorphism) -> SetMorphism:
-        """Compose f ∘ g."""
+        """Compose f @ g."""
         return f.compose(g)
     
     @property
@@ -110,5 +110,5 @@ class FinSet(Category):
     @property
     def initial(self) -> FinSetObject:
         """Return an initial object (empty set)."""
-        empty = FinSetObject("∅", self, set())
+        empty = FinSetObject("empty", self, set())
         return empty

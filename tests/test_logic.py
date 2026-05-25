@@ -20,7 +20,7 @@ class TestProposition:
         L = PropLogic()
         T = L.truth
         assert T.connective == Connective.TRUE
-        assert "⊤" in repr(T)
+        assert "Top" in repr(T)
 
     def test_falsehood_is_initial(self):
         L = PropLogic()
@@ -55,7 +55,7 @@ class TestProposition:
         P = L.atomic("P")
         Q = L.atomic("Q")
         PQ = L.conjunction(P, Q)
-        assert "∧" in repr(PQ)
+        assert "^" in repr(PQ)
 
     def test_implication_connective(self):
         L = PropLogic()
@@ -70,7 +70,7 @@ class TestProposition:
         P = L.atomic("P")
         Q = L.atomic("Q")
         impl = L.implication(P, Q)
-        assert "⊃" in repr(impl)
+        assert "=>" in repr(impl)
 
     def test_atomic_repr(self):
         L = PropLogic()
@@ -99,7 +99,7 @@ class TestProof:
         Q = L.atomic("Q")
         PQ = L.conjunction(P, Q)
         morphisms = L.all_morphisms()
-        # There should be projections π₁: P∧Q → P and π₂: P∧Q → Q
+        # There should be projections pi1: P^Q -> P and pi2: P^Q -> Q
         projs_to_P = [m for m in morphisms if m.domain is PQ and m.codomain is P]
         projs_to_Q = [m for m in morphisms if m.domain is PQ and m.codomain is Q]
         assert len(projs_to_P) == 1
@@ -118,7 +118,7 @@ class TestProof:
         PQ = L.conjunction(P, Q)
         fst = next(m for m in L.morphisms(PQ, P))
         ax_P = L.axiom(P)
-        cut = ax_P @ fst  # (P → P) ∘ (P∧Q → P) = P∧Q → P
+        cut = ax_P @ fst  # (P -> P) @ (P^Q -> P) = P^Q -> P
         assert cut.domain is PQ
         assert cut.codomain is P
 
@@ -137,7 +137,7 @@ class TestProof:
         ax_P = L.axiom(P)
         ax_Q = L.axiom(Q)
         with pytest.raises(CompositionError):
-            ax_P @ ax_Q  # P ≠ Q
+            ax_P @ ax_Q  # P != Q
 
     def test_proof_composition_with_non_proof_raises(self):
         L = PropLogic()
@@ -152,7 +152,7 @@ class TestProof:
         ax = L.axiom(P)
         r = repr(ax)
         assert "P" in r
-        assert "⊢" in r
+        assert "|-" in r
 
     def test_implication_intro(self):
         L = PropLogic()

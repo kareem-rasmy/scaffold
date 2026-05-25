@@ -54,7 +54,7 @@ class Functor:
         """
         Verify functoriality:
         1. F(id_A) = id_{F(A)}
-        2. F(g ∘ f) = F(g) ∘ F(f)
+        2. F(g @ f) = F(g) @ F(f)
         """
         # Check identity preservation
         for obj in self._domain.objects:
@@ -112,12 +112,12 @@ class Functor:
             raise TypeError(f"Cannot apply functor to {type(x)}")
     
     def __repr__(self):
-        return f"Functor({self._name}: {self._domain.name} → {self._codomain.name})"
+        return f"Functor({self._name}: {self._domain.name} -> {self._codomain.name})"
 
 
 class ForgetfulFunctor(Functor):
     """
-    The forgetful functor Grp → FinSet that forgets group structure.
+    The forgetful functor Grp -> FinSet that forgets group structure.
     """
     def __init__(self, domain, codomain):
         super().__init__(domain, codomain, "Forgetful")
@@ -141,15 +141,14 @@ class ForgetfulFunctor(Functor):
                     mapping = {x: mor(x) for x in src.elements}
                     from scaffold.categories.sets import SetMorphism
                     
-                    set_mor = SetMorphism(F_src, F_tgt, mapping, 
-                                         f"U({mor.name})")
+                    set_mor = SetMorphism(F_src, F_tgt, mapping, f"U({mor.name})")
                     self.set_morphism_mapping(mor, set_mor)
                     self._codomain._add_morphism(set_mor)
 
 
 class NaturalTransformation:
     """
-    A natural transformation between two functors F, G: C → D.
+    A natural transformation between two functors F, G: C -> D.
     """
     def __init__(self, F: Functor, G: Functor, name: str = None):
         if F.domain != G.domain:
@@ -159,16 +158,16 @@ class NaturalTransformation:
         
         self._F = F
         self._G = G
-        self._name = name or f"α_{id(self)}"
+        self._name = name or f"alpha_{id(self)}"
         self._components: Dict[Object, Morphism] = {}
     
     def set_component(self, obj: Object, morphism: Morphism):
-        """Set the component α_A: F(A) → G(A)."""
+        """Set the component alpha_A: F(A) -> G(A)."""
         self._components[obj] = morphism
     
     def verify_naturality(self) -> bool:
         """
-        Verify naturality: for all f: A → B, G(f) ∘ α_A = α_B ∘ F(f)
+        Verify naturality: for all f: A -> B, G(f) @ alpha_A = alpha_B @ F(f)
         """
         C = self._F.domain
         D = self._F.codomain
@@ -183,19 +182,19 @@ class NaturalTransformation:
                 F_f = self._F.map_morphism(f)
                 G_f = self._G.map_morphism(f)
                 
-                α_A = self._components.get(A)
-                α_B = self._components.get(B)
+                alpha_A = self._components.get(A)
+                alpha_B = self._components.get(B)
                 
-                if α_A is None or α_B is None:
+                if alpha_A is None or alpha_B is None:
                     continue
                 
-                # G(f) ∘ α_A
-                lhs = D.compose(G_f, α_A)
-                # α_B ∘ F(f)
-                rhs = D.compose(α_B, F_f)
+                # G(f) @ alpha_A
+                lhs = D.compose(G_f, alpha_A)
+                # alpha_B @ F(f)
+                rhs = D.compose(alpha_B, F_f)
                 
                 if lhs != rhs:
-                    print(f"Naturality fails for {f}: {lhs} ≠ {rhs}")
+                    print(f"Naturality fails for {f}: {lhs} != {rhs}")
                     return False
         
         return True

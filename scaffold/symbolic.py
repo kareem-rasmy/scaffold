@@ -129,24 +129,24 @@ class SymbolicSetMorphism(SetMorphism):
         return result
     
     def compose(self, other: 'SymbolicSetMorphism') -> 'SymbolicSetMorphism':
-        """Compose symbolically: self ∘ other."""
+        """Compose symbolically: self @ other."""
         if not isinstance(other, SymbolicSetMorphism):
             raise CompositionError("Can only compose SymbolicSetMorphisms")
         if other.codomain != self.domain:
             raise CompositionError(
-                f"Cannot compose: {other.codomain} ≠ {self.domain}"
+                f"Cannot compose: {other.codomain} != {self.domain}"
             )
         
         # Create composite Lambda
         x = symbols('x')
         composed_func = Lambda(x, self._func(other._func(x)))
-        new_name = f"({self._name} ∘ {other._name})"
+        new_name = f"({self._name} @ {other._name})"
         
         return SymbolicSetMorphism(other.domain, self.codomain, 
                                    composed_func, new_name)
     
     def __repr__(self):
-        return f"{self._name}: {self.domain.name} → {self.codomain.name} [{pretty(self._func)}]"
+        return f"{self._name}: {self.domain.name} -> {self.codomain.name} [{pretty(self._func)}]"
 
 
 class SymbolicFinSet(FinSet):
@@ -171,7 +171,7 @@ class SymbolicFinSet(FinSet):
         return morphism
     
     def identity(self, obj: SymbolicSetObject) -> SymbolicSetMorphism:
-        """Identity function: λx.x"""
+        """Identity function: lambdax.x"""
         x = symbols('x')
         id_func = Lambda(x, x)
         morphism = SymbolicSetMorphism(obj, obj, id_func, f"id_{obj.name}")
@@ -229,7 +229,7 @@ class SymbolicProof(Proof):
         if self._sympy_proof:
             return True
         
-        # Construct implication: premises → conclusion
+        # Construct implication: premises -> conclusion
         if self.premises:
             premise_expr = And(*[p.domain.sympy_expression for p in self.premises])
         else:
@@ -237,7 +237,7 @@ class SymbolicProof(Proof):
         
         conclusion_expr = self.codomain.sympy_expression
         
-        # Check if premise → conclusion is a tautology
+        # Check if premise -> conclusion is a tautology
         implication = Implies(premise_expr, conclusion_expr)
         result = not satisfiable(Not(implication))
         return result
@@ -258,36 +258,36 @@ class SymbolicPropLogic(PropLogic):
         return prop
     
     def conjunction(self, A: SymbolicProposition, B: SymbolicProposition):
-        """Create A ∧ B with SymPy expression."""
-        name = f"({A.name}∧{B.name})"
+        """Create A ^ B with SymPy expression."""
+        name = f"({A.name}^{B.name})"
         sympy_expr = And(A.sympy_expression, B.sympy_expression)
         prop = SymbolicProposition(name, self, sympy_expr, is_atomic=False)
         
         # Create projections
-        fst = SymbolicProof(prop, A, f"π₁_{name}")
-        snd = SymbolicProof(prop, B, f"π₂_{name}")
+        fst = SymbolicProof(prop, A, f"pi1_{name}")
+        snd = SymbolicProof(prop, B, f"pi2_{name}")
         self._add_morphism(fst)
         self._add_morphism(snd)
         
         return prop
     
     def implication(self, A: SymbolicProposition, B: SymbolicProposition):
-        """Create A ⊃ B with SymPy expression."""
-        name = f"({A.name}⊃{B.name})"
+        """Create A => B with SymPy expression."""
+        name = f"({A.name}=>{B.name})"
         sympy_expr = Implies(A.sympy_expression, B.sympy_expression)
         prop = SymbolicProposition(name, self, sympy_expr, is_atomic=False)
         return prop
     
     def disjunction(self, A: SymbolicProposition, B: SymbolicProposition):
-        """Create A ∨ B with SymPy expression."""
-        name = f"({A.name}∨{B.name})"
+        """Create A | B with SymPy expression."""
+        name = f"({A.name}|{B.name})"
         sympy_expr = Or(A.sympy_expression, B.sympy_expression)
         prop = SymbolicProposition(name, self, sympy_expr, is_atomic=False)
         return prop
     
     def negation(self, A: SymbolicProposition):
-        """Create ¬A with SymPy expression."""
-        name = f"¬{A.name}"
+        """Create ~A with SymPy expression."""
+        name = f"~{A.name}"
         sympy_expr = Not(A.sympy_expression)
         prop = SymbolicProposition(name, self, sympy_expr, is_atomic=False)
         return prop
@@ -330,34 +330,34 @@ class UniversalPropertyVerifier:
         """
         from sympy import solve, Eq, symbols
         
-        print(f"Verifying product: {P.name} is product of {A.name} × {B.name}")
+        print(f"Verifying product: {P.name} is product of {A.name} x {B.name}")
         
-        # Check that pi1: P → A and pi2: P → B
+        # Check that pi1: P -> A and pi2: P -> B
         if pi1.domain != P or pi1.codomain != A:
-            print(f"  ✗ Projection π₁ has wrong domain/codomain")
+            print(f"  ✗ Projection pi1 has wrong domain/codomain")
             return False
         if pi2.domain != P or pi2.codomain != B:
-            print(f"  ✗ Projection π₂ has wrong domain/codomain")
+            print(f"  ✗ Projection pi2 has wrong domain/codomain")
             return False
         
         # For symbolic morphisms, we can verify the universal property
-        # by showing that for any X, f: X→A, g: X→B, 
+        # by showing that for any X, f: X->A, g: X->B, 
         # the system of equations has a unique solution for the mediating morphism
         
         if isinstance(pi1, SymbolicSetMorphism) and isinstance(pi2, SymbolicSetMorphism):
             print(f"  Using symbolic verification...")
             
             # The mediating morphism u must satisfy:
-            # π₁ ∘ u = f
-            # π₂ ∘ u = g
+            # pi1 @ u = f
+            # pi2 @ u = g
             # For any f, g, this uniquely determines u
             
             # Symbolically: u(x) = (f(x), g(x))
             # The uniqueness is guaranteed because the components are forced
             
             print(f"  ✓ Product property verified symbolically")
-            print(f"  For any object X with maps f: X→A, g: X→B,")
-            print(f"  the unique mediating morphism is ⟨f, g⟩(x) = (f(x), g(x))")
+            print(f"  For any object X with maps f: X->A, g: X->B,")
+            print(f"  the unique mediating morphism is <f, g>(x) = (f(x), g(x))")
             return True
         
         # Fall back to exhaustive checking for finite sets
@@ -378,7 +378,7 @@ class UniversalPropertyVerifier:
     def verify_terminal(C: Category, T: Object) -> bool:
         """
         Verify that T is a terminal object.
-        For each object X, there should be exactly one morphism X → T.
+        For each object X, there should be exactly one morphism X -> T.
         """
         print(f"Verifying terminal object: {T.name}")
         

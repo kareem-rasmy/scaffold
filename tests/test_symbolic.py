@@ -24,7 +24,7 @@ class TestSymbolicSetObject:
 
     def test_interval_is_infinite(self):
         C = SymbolicFinSet()
-        R = C.create_symbolic_set("ℝ", expr=Interval(-oo, oo))
+        R = C.create_symbolic_set("R", expr=Interval(-oo, oo))
         assert R.is_infinite
 
     def test_symbolic_expression_preserved(self):
@@ -58,8 +58,8 @@ class TestSymbolicSetMorphism:
     def test_morphism_on_infinite_domain_evaluates_symbolically(self):
         C = SymbolicFinSet()
         x = symbols('x')
-        R = C.create_symbolic_set("ℝ", expr=Interval(-oo, oo))
-        R2 = C.create_symbolic_set("ℝ2", expr=Interval(-oo, oo))
+        R = C.create_symbolic_set("R", expr=Interval(-oo, oo))
+        R2 = C.create_symbolic_set("R2", expr=Interval(-oo, oo))
         square = C.create_symbolic_morphism(R, R2, Lambda(x, x ** 2), "sq")
         result = square(x)
         assert result == x ** 2
@@ -88,7 +88,7 @@ class TestSymbolicSetMorphism:
     def test_composition_on_infinite_domain(self):
         C = SymbolicFinSet()
         x = symbols('x')
-        R = C.create_symbolic_set("ℝ", expr=Interval(-oo, oo))
+        R = C.create_symbolic_set("R", expr=Interval(-oo, oo))
         f = C.create_symbolic_morphism(R, R, Lambda(x, x + 1), "inc")
         g = C.create_symbolic_morphism(R, R, Lambda(x, x * 2), "dbl")
         h = g @ f  # double(inc(x)) = 2(x+1)
@@ -220,7 +220,7 @@ class TestSymbolicPropLogic:
         L = SymbolicPropLogic()
         P = L.atomic("P")
         Q = L.atomic("Q")
-        # (P ∧ (P ⊃ Q)) ⊃ Q
+        # (P ^ (P => Q)) => Q
         mp = L.implication(L.conjunction(P, L.implication(P, Q)), Q)
         assert L.is_theorem(mp)
 
@@ -228,14 +228,14 @@ class TestSymbolicPropLogic:
         L = SymbolicPropLogic()
         P = L.atomic("P")
         Q = L.atomic("Q")
-        # (P ∧ Q) ⊃ P
+        # (P ^ Q) => P
         assert L.is_theorem(L.implication(L.conjunction(P, Q), P))
 
     def test_is_theorem_double_negation_elimination(self):
         L = SymbolicPropLogic()
         A = L.atomic("A")
         not_not_A = L.negation(L.negation(A))
-        # ¬¬A ⊃ A is a classical tautology
+        # ~~A => A is a classical tautology
         assert L.is_theorem(L.implication(not_not_A, A))
 
     def test_not_a_theorem_bare_atom(self):
@@ -247,7 +247,7 @@ class TestSymbolicPropLogic:
         L = SymbolicPropLogic()
         P = L.atomic("P")
         Q = L.atomic("Q")
-        # (P ∧ Q) ⊃ ¬P  — not a tautology
+        # (P ^ Q) => ~P  — not a tautology
         invalid = L.implication(L.conjunction(P, Q), L.negation(P))
         assert not L.is_theorem(invalid)
 
@@ -287,8 +287,8 @@ class TestUniversalPropertyVerifier:
         B = C.create_object("B", {3, 4})
         elems = {(a, b) for a in A.elements for b in B.elements}
         P = C.create_object("AxB", elems)
-        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "π₁")
-        pi2 = C.create_morphism(P, B, {(a, b): b for (a, b) in elems}, "π₂")
+        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "pi1")
+        pi2 = C.create_morphism(P, B, {(a, b): b for (a, b) in elems}, "pi2")
         v = UniversalPropertyVerifier()
         assert v.verify_product(C, A, B, P, pi1, pi2) is True
 
@@ -298,8 +298,8 @@ class TestUniversalPropertyVerifier:
         B = C.create_object("B", {3, 4})
         elems = {(a, b) for a in A.elements for b in B.elements}
         P = C.create_object("AxB", elems)
-        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "π₁")
-        pi2 = C.create_morphism(P, B, {(a, b): b for (a, b) in elems}, "π₂")
+        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "pi1")
+        pi2 = C.create_morphism(P, B, {(a, b): b for (a, b) in elems}, "pi2")
         v = UniversalPropertyVerifier()
         # Pass A instead of P as the claimed product
         assert v.verify_product(C, A, B, A, pi1, pi2) is False
@@ -310,9 +310,9 @@ class TestUniversalPropertyVerifier:
         B = C.create_object("B", {3, 4})
         elems = {(a, b) for a in A.elements for b in B.elements}
         P = C.create_object("AxB", elems)
-        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "π₁")
+        pi1 = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "pi1")
         # pi2 points to A instead of B — wrong codomain
-        pi2_wrong = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "π₂_bad")
+        pi2_wrong = C.create_morphism(P, A, {(a, b): a for (a, b) in elems}, "pi2_bad")
         v = UniversalPropertyVerifier()
         assert v.verify_product(C, A, B, P, pi1, pi2_wrong) is False
 
@@ -328,7 +328,7 @@ class TestUniversalPropertyVerifier:
     def test_verify_terminal_fails_when_object_lacks_morphism_to_t(self):
         C = FinSet()
         T = C.terminal
-        C.create_object("A", {1, 2})  # no morphism A → T added
+        C.create_object("A", {1, 2})  # no morphism A -> T added
         v = UniversalPropertyVerifier()
         assert v.verify_terminal(C, T) is False
 

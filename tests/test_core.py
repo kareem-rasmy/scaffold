@@ -85,7 +85,7 @@ class TestMorphism:
         D = C.create_object("D", {True, False})
         f = C.create_morphism(A, B, {1: "x", 2: "y"}, "f")
         g = C.create_morphism(B, D, {"x": True, "y": False}, "g")
-        h = g @ f  # g ∘ f
+        h = g @ f  # g @ f
         assert h.domain is A
         assert h.codomain is D
 

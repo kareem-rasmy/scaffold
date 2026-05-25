@@ -82,7 +82,7 @@ class TestSetMorphism:
 
     def test_empty_domain_valid(self):
         C = FinSet()
-        empty = C.create_object("∅", set())
+        empty = C.create_object("empty", set())
         B = C.create_object("B", {1})
         f = C.create_morphism(empty, B, {}, "empty_func")
         assert f.domain is empty
@@ -220,15 +220,15 @@ class TestFinSetCategory:
         A = C.create_object("A", {"a1", "a2"})
         B = C.create_object("B", {"b1", "b2"})
         AxB_elems = {(a, b) for a in A.elements for b in B.elements}
-        AxB = C.create_object("A×B", AxB_elems)
-        pi1 = C.create_morphism(AxB, A, {(a, b): a for (a, b) in AxB_elems}, "π₁")
-        pi2 = C.create_morphism(AxB, B, {(a, b): b for (a, b) in AxB_elems}, "π₂")
+        AxB = C.create_object("AxB", AxB_elems)
+        pi1 = C.create_morphism(AxB, A, {(a, b): a for (a, b) in AxB_elems}, "pi1")
+        pi2 = C.create_morphism(AxB, B, {(a, b): b for (a, b) in AxB_elems}, "pi2")
 
         X = C.create_object("X", {"x1", "x2"})
         f = C.create_morphism(X, A, {"x1": "a1", "x2": "a2"}, "f")
         g = C.create_morphism(X, B, {"x1": "b1", "x2": "b2"}, "g")
         mediating = C.create_morphism(X, AxB,
                                       {"x1": ("a1", "b1"), "x2": ("a2", "b2")},
-                                      "⟨f,g⟩")
+                                      "<f,g>")
         assert (pi1 @ mediating).mapping == f.mapping
         assert (pi2 @ mediating).mapping == g.mapping

@@ -63,20 +63,20 @@ class Morphism(ABC):
     @abstractmethod
     def compose(self, other: 'Morphism') -> 'Morphism':
         """
-        Compose self ∘ other. 
+        Compose self @ other. 
         Requires: other.codomain == self.domain
         Returns: morphism from other.domain to self.codomain
         """
         pass
     
     def __matmul__(self, other: 'Morphism') -> 'Morphism':
-        """Use @ for composition: f @ g means f ∘ g (f after g)"""
+        """Use @ for composition: f @ g means f @ g (f after g)"""
         if not isinstance(other, Morphism):
             return NotImplemented
         return self.compose(other)
     
     def __repr__(self):
-        return f"{self._name}: {self._domain.name} → {self._codomain.name}"
+        return f"{self._name}: {self._domain.name} -> {self._codomain.name}"
     
     def __hash__(self):
         return id(self)
@@ -137,7 +137,7 @@ class Category(ABC):
     @abstractmethod
     def compose(self, f: Morphism, g: Morphism) -> Morphism:
         """
-        Compose f ∘ g. 
+        Compose f @ g. 
         Requires: g.codomain == f.domain
         Returns: morphism from g.domain to f.codomain
         """

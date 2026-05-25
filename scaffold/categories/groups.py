@@ -64,18 +64,18 @@ class GroupHomomorphism(Morphism):
         return self._mapping(x)
     
     def compose(self, other: 'GroupHomomorphism') -> 'GroupHomomorphism':
-        """Compose self ∘ other."""
+        """Compose self @ other."""
         if not isinstance(other, GroupHomomorphism):
             raise CompositionError("Can only compose GroupHomomorphisms")
         if other.codomain != self.domain:
             raise CompositionError(
-                f"Cannot compose: {other.codomain} ≠ {self.domain}"
+                f"Cannot compose: {other.codomain} != {self.domain}"
             )
         
         def composed(x):
             return self._mapping(other._mapping(x))
         
-        new_name = f"({self._name} ∘ {other._name})"
+        new_name = f"({self._name} @ {other._name})"
         return GroupHomomorphism(other.domain, self.codomain, composed, new_name)
 
 
@@ -107,5 +107,5 @@ class Grp(Category):
         return morphism
     
     def compose(self, f: GroupHomomorphism, g: GroupHomomorphism) -> GroupHomomorphism:
-        """Compose f ∘ g."""
+        """Compose f @ g."""
         return f.compose(g)

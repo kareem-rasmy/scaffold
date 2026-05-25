@@ -101,13 +101,13 @@ class TestFunctor:
 class TestForgetfulFunctor:
     def _setup(self):
         grp = Grp()
-        Z2 = grp.create_object("Z₂", {0, 1}, lambda a, b: (a + b) % 2, 0)
-        Z4 = grp.create_object("Z₄", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
+        Z2 = grp.create_object("Z2", {0, 1}, lambda a, b: (a + b) % 2, 0)
+        Z4 = grp.create_object("Z4", {0, 1, 2, 3}, lambda a, b: (a + b) % 4, 0)
         phi = grp.create_morphism(Z4, Z2, lambda x: x % 2, "phi")
 
         fset = FinSet()
-        Z2_set = fset.create_object("Z₂_set", {0, 1})
-        Z4_set = fset.create_object("Z₄_set", {0, 1, 2, 3})
+        Z2_set = fset.create_object("Z2_set", {0, 1})
+        Z4_set = fset.create_object("Z4_set", {0, 1, 2, 3})
 
         U = ForgetfulFunctor(grp, fset)
         U.setup({Z2: Z2_set, Z4: Z4_set})
@@ -137,7 +137,7 @@ class TestNaturalTransformation:
         D = FinSet()
         F = Functor(C, D, "F")
         G = Functor(C, D, "G")
-        alpha = NaturalTransformation(F, G, "α")
+        alpha = NaturalTransformation(F, G, "alpha")
         assert alpha._F is F
         assert alpha._G is G
 
@@ -177,8 +177,8 @@ class TestNaturalTransformation:
         GA = D.create_object("GA", {1})
         F.set_object_mapping(A, FA)
         G.set_object_mapping(A, GA)
-        alpha = NaturalTransformation(F, G, "α")
-        component = D.create_morphism(FA, GA, {1: 1}, "α_A")
+        alpha = NaturalTransformation(F, G, "alpha")
+        component = D.create_morphism(FA, GA, {1: 1}, "alpha_A")
         alpha.set_component(A, component)
         assert alpha._components[A] is component
 
@@ -187,6 +187,6 @@ class TestNaturalTransformation:
         D = FinSet()
         F = Functor(C, D, "F")
         G = Functor(C, D, "G")
-        alpha = NaturalTransformation(F, G, "α")
+        alpha = NaturalTransformation(F, G, "alpha")
         # No morphisms in C, naturality holds vacuously
         assert alpha.verify_naturality() is True
