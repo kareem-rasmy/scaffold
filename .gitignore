@@ -2,3 +2,5 @@
 whl/*
 my_ws/*
 .vscode/*
+install-dev.sh
+install-dev.bat
