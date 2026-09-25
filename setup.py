@@ -14,7 +14,8 @@ setup(
     url="https://github.com/kareem-rasmy/scaffold.git",
     packages=find_packages(exclude=["*.test", "*.test.*", "test.*", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=[
-        "networkx"
+        "networkx",
+        "matplotlib"
     ]
 )
 

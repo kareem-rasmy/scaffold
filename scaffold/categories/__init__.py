@@ -1,3 +1,3 @@
-from .groups import *
-from .logic import *
-from .sets import *
+from .base import *
+from .group_category import *
+from .set_category import *

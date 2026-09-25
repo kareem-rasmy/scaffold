@@ -1,5 +1,4 @@
-"""
-Scaffold - A Python library exploring mathematics through category theory.
-"""
-from .core import *
+from .categories import *
 from .functors import *
+from .natural_transformations import *
+from .fields import *
