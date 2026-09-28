@@ -4,4 +4,10 @@ from scaffold.core.entity import MathematicalEntity
 
 @dataclass(frozen=True)
 class MathematicalStatement(MathematicalEntity):
-    pass 
+    pass
+
+
+@dataclass(frozen=True)
+class LogicalStatement(MathematicalStatement):
+    antecedent: MathematicalStatement
+    consequent: MathematicalStatement

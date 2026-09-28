@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: scaffold
+Version: 0.0.0
+Summary: Math Library
+Home-page: https://github.com/kareem-rasmy/scaffold.git
+Author: Kareem Rasmy
+Author-email: Kareem.Rasmy@gmail.com
+Requires-Dist: networkx
+Requires-Dist: matplotlib
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: summary

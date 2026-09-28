@@ -1,10 +1,9 @@
-import os
-import shutil
 import pathlib
 from setuptools import setup, find_packages
 
 home = pathlib.Path(__file__).parent
-version = (home / "scaffold/version.txt").read_text()
+version_file = home / "scaffold/version.txt"
+version = version_file.read_text().strip() if version_file.exists() else "0.0.0"
 setup(
     name="scaffold",
     version=version,
@@ -18,8 +17,3 @@ setup(
         "matplotlib"
     ]
 )
-
-egg_info_dir = "scaffold.egg-info"
-if os.path.exists(egg_info_dir):
-    print(f"Removing {egg_info_dir} ...")
-    shutil.rmtree(egg_info_dir)

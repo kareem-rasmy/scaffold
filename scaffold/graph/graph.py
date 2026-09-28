@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+from networkx.drawing.nx_agraph import graphviz_layout
 from scaffold.core.entity import MathematicalEntity
 from scaffold.core.relation import Relation
 
@@ -33,7 +34,7 @@ class MathematicalGraph:
     def draw(self) -> None:
         graph = self._graph
 
-        pos = nx.spring_layout(graph)
+        pos = graphviz_layout(graph, prog="dot")
 
         node_labels = {
             node_id: data["entity"].name
@@ -41,18 +42,32 @@ class MathematicalGraph:
         }
 
         edge_labels = {
-            (source, target, key): data["relation_type"].name
+            (source, target, key): data["relation_type"].value
             for source, target, key, data
             in graph.edges(keys=True, data=True)
         }
 
-        nx.draw(
+        plt.figure(figsize=(14, 10))
+
+        nx.draw_networkx_nodes(
+            graph,
+            pos,
+            node_size=3000,
+        )
+
+        nx.draw_networkx_labels(
             graph,
             pos,
             labels=node_labels,
-            with_labels=True,
-            node_size=3000,
+        )
+
+        nx.draw_networkx_edges(
+            graph,
+            pos,
             arrows=True,
+            arrowsize=20,
+            node_size=3000,
+            connectionstyle="arc3,rad=0.05",
         )
 
         nx.draw_networkx_edge_labels(
@@ -61,4 +76,5 @@ class MathematicalGraph:
             edge_labels=edge_labels,
         )
 
+        plt.axis("off")
         plt.show()
