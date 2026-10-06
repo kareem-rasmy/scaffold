@@ -46,3 +46,26 @@ def test_import_book_and_paper_link(tmp_path):
     assert [e.id for e in kb.find(kind="exercise", status="open")] == ["book.ex-1"]
     assert kb.broken_links() == {}
     assert b.todo() == ["Ex 1"]
+
+
+def test_readable_expr_storage(tmp_path):
+    kb = KnowledgeBase(tmp_path)
+    s, t = sp.Symbol("sigma", positive=True), sp.Symbol("tau", positive=True)
+    d1 = sp.Symbol("d1")
+    kb.add("d2", "definition", "d2", expr=d1 - s*sp.sqrt(t), owner=None)
+    text = (tmp_path / "definition" / "d2.md").read_text(encoding="utf-8")
+    assert "expr: d1 - sigma*sqrt(tau)" in text and "Symbol(" not in text
+    e = KnowledgeBase(tmp_path)["d2"].sympy
+    assert e == d1 - s*sp.sqrt(t)                       # assumptions survive
+    assert "d_{2} = d_{1}" in text                      # display block
+
+
+def test_old_srepr_entries_still_load(tmp_path):
+    x = sp.Symbol("x", positive=True)
+    old = ("---\nid: e\nkind: definition\ntitle: e\nexpr: " + sp.srepr(sp.sqrt(x**2) + x) +
+           "\nlatex: 2 x\n---\n\n$$\n2 x\n$$\n\nmy notes\n")
+    (tmp_path / "definition").mkdir()
+    (tmp_path / "definition" / "e.md").write_text(old, encoding="utf-8")
+    e = KnowledgeBase(tmp_path)["e"]
+    assert e.sympy == 2*x and e.notes == "my notes"
+    assert e.expr == "2*x" and e.symbols == {"x": "positive"}   # upgraded in memory
