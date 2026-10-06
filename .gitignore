@@ -1,8 +1,10 @@
-.venv/*
-whl/*
-my_ws/*
-.vscode/*
-install-dev.sh
-install-dev.bat
 __pycache__/
-*.pyc
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+rendered/
+my_ws/
+.vscode/
