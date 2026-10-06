@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import sympy as sp
 
+from ..render import compact_definitions
+
 from .entry import slug
 from .store import KnowledgeBase
 
@@ -36,8 +38,10 @@ def import_notes(kb: KnowledgeBase, n, notes_file=None, link=None, include_symbo
         for name, (s, meaning) in n.symbols.items():
             kb.add(gid(name), "symbol", name, statement=meaning,
                    expr=s if isinstance(s, sp.Symbol) else None, sources=src(name), **common)
+    short = compact_definitions(n)        # d2 = d1 - sigma*sqrt(tau), not the expansion
     for name, (e, meaning) in n.defs.items():
-        kb.add(gid(name), "definition", name, statement=meaning, expr=e, sources=src(name), **common)
+        kb.add(gid(name), "definition", name, statement=meaning, expr=e, compact=short[name],
+               sources=src(name), **common)
     for name, (_, meaning) in n.objects.items():
         kb.add(gid(name), "object", name, statement=meaning, sources=src(name), **common)
     for name, (m, meaning) in n.morphisms.items():

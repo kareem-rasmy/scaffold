@@ -31,7 +31,7 @@ class KnowledgeBase:
         self.entries[e.id] = e
         return e
 
-    def add(self, id, kind, title, *, expr=None, owner=None, **kw) -> Entry:
+    def add(self, id, kind, title, *, expr=None, compact=None, owner=None, **kw) -> Entry:
         """
         Create or merge.
         `owner` is the source key when called by an import, None when you call
@@ -44,7 +44,7 @@ class KnowledgeBase:
         """
         new = Entry(id=id, kind=kind, title=title, **kw)
         new.curated = new.curated or owner is None
-        new.set_sympy(expr)
+        new.set_sympy(expr, compact)
         old = self.entries.get(id)
         if old:
             for f in ("sources", "depends_on", "tags"):
@@ -57,7 +57,9 @@ class KnowledgeBase:
                 new.statement = old.statement or new.statement
                 if old.kind == "theorem" and new.kind == "claim":
                     new.kind = old.kind
-            for f in ("statement", "expr", "domain", "codomain", "checked_in", "notes"):
+            if not new.expr:
+                new.expr, new.symbols, new.compact = old.expr, old.symbols, old.compact
+            for f in ("statement", "domain", "codomain", "checked_in", "notes"):
                 if not getattr(new, f):
                     setattr(new, f, getattr(old, f))
             if new.status == "stated" and old.status != "stated":
