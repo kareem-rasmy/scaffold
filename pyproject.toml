@@ -4,19 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scaffold"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Checkable SymPy notes for papers and textbooks, with a central knowledge base"
 requires-python = ">=3.10"
 dependencies = ["sympy>=1.12", "pyyaml>=6"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "build"]
 
 [project.scripts]
-scaffold = "scaffold.__main__:main"
+scaffold = "scaffold.src.__main__:main"
+
+[tool.setuptools.dynamic]
+version = { file = "scaffold/version.txt" }
 
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["scaffold", "scaffold.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,7 +1,6 @@
-#!/bin/bash
-
+#!/usr/bin/env sh
+set -e
 echo "Building wheel file for scaffold"
-python3 setup.py bdist_wheel --dist-dir=whl
-
-rm -rf scaffold.egg-info
-rm -rf build
+python -m build --wheel --outdir whl
+rm -rf scaffold.egg-info build
+echo "Build succeeded"
